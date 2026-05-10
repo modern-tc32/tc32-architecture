@@ -10,6 +10,8 @@ It is written for implementers of:
 - linkers
 - flat-binary emitters
 - disassemblers
+- binary analysis modules
+- decompilation modules
 - firmware startup runtimes
 
 The document set describes the full path from an abstract program to a bootable binary image.
@@ -59,6 +61,7 @@ This specification does not define any source language. It defines the target co
 - [12-complete-instruction-encoding-reference.md](12-complete-instruction-encoding-reference.md)
 - [13-compiler-implementation-blueprint.md](13-compiler-implementation-blueprint.md)
 - [14-full-source-to-binary-compiler-plan.md](14-full-source-to-binary-compiler-plan.md)
+- [15-binary-analysis-and-decompilation-module-spec.md](15-binary-analysis-and-decompilation-module-spec.md)
 
 ## Reading Order
 
@@ -70,6 +73,7 @@ This specification does not define any source language. It defines the target co
 6. Complete machine-code encoding reference.
 7. Worked examples, compiler blueprint, and end-to-end checklist.
 8. Full source-to-binary compiler plan, legalization matrix, and runtime-support contract.
+9. Binary-analysis and decompilation module contract.
 
 ## Design Rule
 
