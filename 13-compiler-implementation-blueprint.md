@@ -172,6 +172,7 @@ Must preserve:
 Perform:
 
 - short-branch range checking
+- exact-`P + 4` short-conditional repair
 - conditional-branch rewriting
 - far-edge veneer insertion
 - jump-table finalization
@@ -317,7 +318,7 @@ Deliverables:
 Acceptance conditions:
 
 - all safe branch patterns are generated
-- no forbidden direct long conditional branches appear
+- no forbidden direct long conditional branches appear, except the mandatory repair of a resolved short conditional edge whose target is exactly `P + 4`
 
 ### Milestone 5: Production Safety
 

@@ -121,8 +121,10 @@ The following condition codes are `architecturally defined` but require conserva
 
 Rules:
 
-- `safe to generate`: short conditional branches using ordinary conditions such as `EQ`, `NE`, `HS`, `LO`, `MI`, `HI`, `LT`, `GT`, and `LE`, provided the branch is in range.
-- `must not generate`: direct long conditional branches.
+- `safe to generate`: short conditional branches using ordinary conditions such as `EQ`, `NE`, `HS`, `LO`, `MI`, `HI`, `LT`, `GT`, and `LE`, provided the branch is in range and the resolved target is not exactly `P + 4`.
+- `must not generate`: the resolved 16-bit `tj<cc>` encoding whose target is exactly `P + 4`, because that encoding corresponds to `Enc = 0` and misexecutes on TLSR8258-class hardware.
+- `must not generate`: direct long conditional branches as the general far-edge lowering strategy.
+- `toolchain obligation`: when a resolved short conditional edge targets exactly `P + 4`, rewrite or widen that edge during final layout instead of emitting the 16-bit `Enc = 0` form.
 - `must not generate`: `tjpl` as the primary lowering of signed `>= 0` after an arbitrary callback or helper return.
 - `must not generate`: `tjls` as the primary range-check branch for jump-table dispatch.
 
@@ -227,7 +229,7 @@ The following instruction families are outside the TC32 code-generation surface 
 
 The following forms are `architecturally defined` but not safe as primary code-generation targets for TLSR8258-class hardware:
 
-- direct long conditional branches
+- direct long conditional branches, except when used only as the mandatory repair for a short conditional edge whose resolved target is exactly `P + 4`
 - unchecked far direct `tj`
 - condition-code-sensitive shapes relying on `PL`, `GE`, or `LS` when a safer short-branch rewrite exists
 

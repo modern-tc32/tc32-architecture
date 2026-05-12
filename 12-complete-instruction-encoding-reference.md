@@ -529,6 +529,14 @@ Condition bases:
 | `GT` | `0xCC00` |
 | `LE` | `0xCD00` |
 
+Special resolved-layout rule:
+
+- `Enc = 0` means `target = P + 4`
+- this is the case where the branch skips exactly one 16-bit instruction
+- the 16-bit encoding is architecturally valid and decodable
+- `must not generate`: the resolved 16-bit `Enc = 0` form on TLSR8258-class hardware
+- `toolchain obligation`: widen or rewrite that edge during final layout
+
 ## Short Unconditional Branch
 
 ```text
@@ -557,6 +565,11 @@ constraints:
 ## Long Direct Conditional Branch
 
 This encoding exists architecturally but shall not be the default compiler lowering.
+
+One narrow exception is permitted:
+
+- `safe to generate`: this long conditional encoding may be emitted only as the mandatory repair for a resolved short conditional edge whose target is exactly `P + 4`
+- `must not generate`: use this form as the general far-conditional strategy
 
 For condition code `CC`:
 
@@ -607,7 +620,8 @@ The decoder shall apply the following priorities:
 The following encodings are valid machine code but are not safe as the default output of an automatic compiler:
 
 - direct long conditional branches
+- the resolved 16-bit short conditional `Enc = 0` form
 - direct long `tj`
 - short-immediate pointer arithmetic using `tadd #imm` or `tsub #imm`
 
-These forms may still appear in hand-written assembly, diagnostic tools, or controlled experiments.
+These forms may still appear in hand-written assembly, diagnostic tools, or controlled experiments. The one exception for automatic code generation is the mandatory widening of a resolved short conditional edge whose target is exactly `P + 4`.

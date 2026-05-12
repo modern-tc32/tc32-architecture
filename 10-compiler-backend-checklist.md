@@ -72,10 +72,16 @@ Implement:
 
 Do not generate:
 
-- direct long conditional branches
+- direct long conditional branches as the default conditional-lowering strategy
 - direct far `tj` as the default far-edge strategy
 - `tjpl` for signed nonnegative tests after arbitrary helpers
 - `tjls` as the main switch bound check
+
+Mandatory repair:
+
+- detect the resolved short-conditional case whose target is exactly `P + 4`
+- do not emit the 16-bit zero-displacement encoding for that case
+- widen or rewrite that edge during final layout
 
 ## Stage 6: Hazard Repair
 
@@ -97,6 +103,7 @@ Implement emission for:
 - mapping symbols
 
 The assembler must reject out-of-range direct spellings instead of silently rewriting them.
+The one required exception is the resolved short-conditional `P + 4` case, which must be widened or rewritten instead of emitted in 16-bit form.
 
 ## Stage 8: Object Writer
 
@@ -149,7 +156,7 @@ A production-grade TC32 toolchain should also implement:
 ## Final “Must Not Generate” List
 
 - short-immediate pointer increment and decrement
-- direct long conditional branches
+- direct long conditional branches except when used only as the mandatory repair of a resolved short conditional edge whose target is exactly `P + 4`
 - default far direct `tj`
 - `tpop {r3, ..., pc}`
 - split scratch-register returns after additional stack movement

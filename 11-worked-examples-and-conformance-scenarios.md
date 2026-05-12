@@ -100,6 +100,27 @@ Incorrect:
 ; any direct long conditional form
 ```
 
+## Example 6A: Adjacent Conditional Branch Safety Repair
+
+Source shape:
+
+```asm
+tjne .Ltarget
+nop
+.Ltarget:
+```
+
+Interpretation:
+
+- the resolved target is exactly `P + 4`
+- a literal 16-bit `tjne` encoding would therefore use displacement `0`
+- that resolved short form is not safe as generated output on TLSR8258-class hardware
+
+Required result:
+
+- the assembler, relaxer, or backend shall widen or rewrite the edge
+- a long conditional encoding is permitted here only as this narrow repair
+
 ## Example 7: Safe Jump Table
 
 ```asm
