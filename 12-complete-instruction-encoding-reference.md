@@ -535,7 +535,7 @@ Special resolved-layout rule:
 - this is the case where the branch skips exactly one 16-bit instruction
 - the 16-bit encoding is architecturally valid and decodable
 - `must not generate`: the resolved 16-bit `Enc = 0` form on TLSR8258-class hardware
-- `toolchain obligation`: widen or rewrite that edge during final layout
+- `toolchain obligation`: rewrite that edge during final layout; if a compiler chooses local padding as the repair, one extra 16-bit filler instruction is sufficient
 
 ## Short Unconditional Branch
 
@@ -566,10 +566,11 @@ constraints:
 
 This encoding exists architecturally but shall not be the default compiler lowering.
 
-One narrow exception is permitted:
+Compiler and assembler policy:
 
-- `safe to generate`: this long conditional encoding may be emitted only as the mandatory repair for a resolved short conditional edge whose target is exactly `P + 4`
 - `must not generate`: use this form as the general far-conditional strategy
+- `must not generate`: synthesize this form as an automatic repair for a short conditional edge whose resolved target is exactly `P + 4`
+- `decode requirement`: disassemblers and binary-analysis tools shall still recognize and decode this architectural form correctly when it appears in existing binaries or experiments
 
 For condition code `CC`:
 

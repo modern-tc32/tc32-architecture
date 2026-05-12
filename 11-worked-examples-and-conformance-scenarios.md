@@ -118,8 +118,9 @@ Interpretation:
 
 Required result:
 
-- the assembler, relaxer, or backend shall widen or rewrite the edge
-- a long conditional encoding is permitted here only as this narrow repair
+- the backend shall rewrite the edge before final assembly
+- acceptable repairs include local CFG reshaping or adding one 16-bit filler instruction so the target is no longer exactly `P + 4`
+- the assembler or MC relaxer shall not silently turn this case into a direct long conditional branch
 
 ## Example 7: Safe Jump Table
 

@@ -461,7 +461,7 @@ The module should surface, but still decode, patterns that are:
 
 Examples:
 
-- direct long conditional branches, except when they clearly serve as the mandatory repair for a short conditional edge whose resolved target is exactly `P + 4`
+- direct long conditional branches
 - direct far `tj`
 - `PL`, `GE`, or `LS` branch shapes in suspicious contexts
 - multi-pop returns involving `r3` and `pc`

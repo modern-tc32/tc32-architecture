@@ -34,7 +34,7 @@ Rules:
 - `must not generate`: the resolved 16-bit `tj<cc>` encoding whose target is exactly `P + 4`
 - `must not generate`: direct long conditional branches as the general far-edge strategy
 - `toolchain obligation`: if a conditional target is out of range, rewrite the control flow so that the conditional edge remains short and the far transfer is moved onto an unconditional path
-- `toolchain obligation`: if a resolved short conditional edge targets exactly `P + 4`, widen or rewrite that one edge during final layout instead of emitting the 16-bit zero-displacement form
+- `toolchain obligation`: if a resolved short conditional edge targets exactly `P + 4`, rewrite the local layout or CFG during final layout instead of emitting the 16-bit zero-displacement form
 
 ### Exact `pc + 4` Conditional Edge
 
@@ -48,16 +48,19 @@ However, on TLSR8258-class hardware this resolved 16-bit form is not safe as gen
 
 Allowed repair strategies:
 
-- widen the edge to the architectural long conditional encoding
 - rewrite the CFG so the conditional edge no longer uses the short zero-displacement form
+- insert one additional 16-bit filler instruction in the skipped fallthrough path so the conditional target is no longer exactly `P + 4`
 
-The first option is a narrow exception to the normal rule forbidding direct long conditional branches as a primary lowering strategy.
+Not allowed:
+
+- silently widen the edge to the architectural long conditional encoding during assembly relaxation or late layout repair
 
 Safe pattern:
 
 ```asm
 tjne .Lskip
-tjl  far_target
+tmov r4, #0
+nop
 .Lskip:
 ```
 
@@ -77,7 +80,7 @@ The following branch choices require explicit care:
 
 - `tjpl` after arbitrary helper or callback return
 - `tjls` in jump-table range-check lowering
-- any long-form conditional branch except the mandatory repair of a resolved short conditional edge whose target is exactly `pc + 4`
+- any long-form conditional branch in compiler- or assembler-generated output
 
 Preferred replacements:
 

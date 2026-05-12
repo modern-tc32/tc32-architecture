@@ -121,10 +121,11 @@ Example:
 
 The assembler shall reject source branches and literal loads that exceed the encodable range of the written instruction.
 
-One mandatory safety exception exists for short conditional branches:
+One mandatory safety restriction exists for short conditional branches:
 
 - if a resolved local `tj<cc>` target is exactly `P + 4`, the assembler or MC relaxer shall not emit the 16-bit short-conditional zero-displacement machine form
-- instead it shall widen or rewrite the edge to a safe equivalent during assembly relaxation
+- the assembler or MC relaxer shall also not silently repair that source instruction by synthesizing a direct long conditional branch
+- instead, source that still reaches assembly in that shape shall be rejected so the compiler/backend can rewrite the local layout first
 - unresolved external `R_ARM_THM_JUMP8` references are not rewritten at assembly time because the final displacement is not yet known
 
 Required diagnostics classes:
@@ -135,7 +136,7 @@ Required diagnostics classes:
 - out-of-range literal load
 - unsupported system instruction
 
-`toolchain obligation`: the assembler shall not silently invent a veneer, long form, or helper sequence for an instruction that the source explicitly wrote in a shorter form, except for the mandatory repair of a resolved short conditional branch whose target is exactly `P + 4`.
+`toolchain obligation`: the assembler shall not silently invent a veneer, long form, or helper sequence for an instruction that the source explicitly wrote in a shorter form. This includes the resolved short-conditional case whose target is exactly `P + 4`: that edge must already have been rewritten before final assembly.
 
 ## Relocations Emitted By Assembly
 

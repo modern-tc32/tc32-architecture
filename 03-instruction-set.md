@@ -167,7 +167,7 @@ Special safety rule:
 - if the resolved target is exactly `branch_address + 4`, then `imm8 = 0`
 - that 16-bit encoding is `architecturally defined` and decodable
 - `must not generate`: the resolved short conditional `imm8 = 0` form on TLSR8258-class hardware
-- `toolchain obligation`: widen or rewrite that edge during final layout
+- `toolchain obligation`: rewrite that edge during final layout; the repair may change local padding or CFG structure, but shall not substitute a direct long conditional branch
 
 ## Long Call Branch
 
@@ -290,7 +290,7 @@ The following are machine-visible instruction families that require explicit com
 
 - short immediate add/sub operations on pointers
 - long direct branch forms
-- direct long conditional branches, except when used only as the mandatory repair for a short conditional edge whose resolved target is exactly `P + 4`
+- direct long conditional branches
 - condition-sensitive branches using `PL`, `GE`, or `LS` when a safer rewrite exists
 
 The rules for those cases are defined in later chapters and are mandatory for correct code generation.

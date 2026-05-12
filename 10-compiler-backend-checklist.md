@@ -81,7 +81,9 @@ Mandatory repair:
 
 - detect the resolved short-conditional case whose target is exactly `P + 4`
 - do not emit the 16-bit zero-displacement encoding for that case
-- widen or rewrite that edge during final layout
+- rewrite the local layout or CFG during final layout
+- acceptable repair: insert one 16-bit `nop` in the skipped fallthrough block so the short conditional branch no longer has zero displacement
+- forbidden repair: synthesize a direct long conditional branch for that edge
 
 ## Stage 6: Hazard Repair
 
@@ -156,7 +158,7 @@ A production-grade TC32 toolchain should also implement:
 ## Final “Must Not Generate” List
 
 - short-immediate pointer increment and decrement
-- direct long conditional branches except when used only as the mandatory repair of a resolved short conditional edge whose target is exactly `P + 4`
+- direct long conditional branches
 - default far direct `tj`
 - `tpop {r3, ..., pc}`
 - split scratch-register returns after additional stack movement
