@@ -591,6 +591,14 @@ constraints:
   Enc is signed 19-bit
 ```
 
+Implementation note:
+
+- the condition code bits belong to `FirstHalf`
+- for little-endian TC32 object code, `FirstHalf` is the lower-addressed 16-bit halfword of the 32-bit instruction
+- any assembler, relaxer, linker, or post-assembler fixup pass that rewrites an already-laid-out long conditional branch shall decode the preserved condition from the first halfword of the instruction itself
+- if an implementation API already passes a byte pointer positioned at the fixup site, it must read `FirstHalf` from that pointer directly and must not add the instruction offset a second time
+- otherwise a nonzero fragment-local instruction offset can corrupt the recovered condition and silently change, for example, `tjne` into `tjeq`
+
 ## Long Call Branch
 
 ### `tjl target`

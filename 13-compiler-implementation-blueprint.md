@@ -319,6 +319,7 @@ Acceptance conditions:
 
 - all safe branch patterns are generated
 - no forbidden direct long conditional branches appear, except the mandatory repair of a resolved short conditional edge whose target is exactly `P + 4`
+- any pass that performs that mandatory repair preserves the original condition code exactly; in particular, if fixup machinery operates on a pointer already positioned at the branch instruction, it shall recover the condition from the first halfword at that pointer and shall not re-apply the fragment-local offset
 
 ### Milestone 5: Production Safety
 
