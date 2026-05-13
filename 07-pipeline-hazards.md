@@ -104,24 +104,30 @@ Unsafe:
 tpop {r3, r4, r5, r6, r7, pc}
 ```
 
-## Saved-Return-Slot Return
+## Saved-Argument-Area Return
 
 Safe:
 
 ```asm
-tloadr r0, [sp, #saved_ra]
-tstorer r0, [sp, #0]
-tadd   sp, #frame_size
-tpop   {pc}
+tpop   {r1}
+nop
+nop
+tadd   sp, #saved_argument_area_size
+tjex   r1
 ```
 
 Unsafe:
 
 ```asm
-tloadr r1, [sp, #saved_ra]
-tadd   sp, #frame_size
-tjex   r1
+tloadr r1, [sp]
+tstorer r1, [sp, #saved_argument_area_size]
+tadd   sp, #saved_argument_area_size
+tpop   {pc}
 ```
+
+For 64-bit returns in `r0:r1`, the return-address temporary must not be `r0` or
+`r1`. Use another low register and apply the normal post-`tpop` dependency
+padding before consuming it.
 
 ## Load Dependency
 

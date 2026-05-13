@@ -221,6 +221,7 @@ A function end or return site may be recognized by:
 - `tpop {pc}`
 - `tpop {..., pc}` where the register list matches a safe return form
 - `tjex lr`
+- `tpop {tmp}` plus saved-argument-area stack adjustment followed by `tjex tmp`
 - `treti` for interrupt wrappers
 - a branch into a shared no-return sink
 
@@ -229,7 +230,7 @@ Unsafe but decodable forms shall still be represented faithfully even if they ar
 Analysis rules:
 
 - `tpop {r3, ..., pc}` shall decode, but it should be marked as a suspicious return form rather than a preferred canonical return
-- split scratch-register returns after additional stack motion shall not be collapsed into a simple return unless proven equivalent
+- split scratch-register returns after additional stack motion shall not be collapsed into a simple return unless they match the documented saved-argument-area return shape
 
 ## Stack And Frame Recovery
 
@@ -267,6 +268,14 @@ tpop {r4, r5, r6, r7, pc}
 ```asm
 tadd sp, #frame_size
 tpop {pc}
+```
+
+```asm
+tpop {tmp}
+nop
+nop
+tadd sp, #saved_argument_area_size
+tjex tmp
 ```
 
 The analysis engine shall track:

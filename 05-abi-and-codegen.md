@@ -144,6 +144,11 @@ This makes the full incoming argument list appear as:
 - register-save area first
 - overflow stack arguments after it
 
+When the register-save area is above the saved `lr` slot, the epilogue shall
+restore `lr` through a temporary low register, skip the register-save area, and
+return with `tjex tmp`. This matches vendor GCC and avoids copying the saved
+return address within the stack before `tpop {pc}`.
+
 ## Prologue Rules
 
 Safe prologue patterns include:
@@ -171,16 +176,23 @@ tpop {r4, r5, r6, r7, pc}
 and:
 
 ```asm
-load saved_return_address into top stack slot
-tadd sp, #frame_size
-tpop {pc}
+tpop {tmp}
+nop
+nop
+tadd sp, #saved_argument_area_size
+tjex tmp
 ```
+
+This split form is specifically for variadic or otherwise saved-argument
+epilogues where `tmp` is a low register that is not live as a return value. For
+a 64-bit result in `r0:r1`, use another low register such as `r2` through `r7`.
 
 Unsafe epilogues:
 
 - any return that destroys the final result before restoring `pc`
 - any multi-pop return that combines `r3` and `pc`
-- any split return through a scratch register after further stack motion
+- any saved-argument epilogue that copies a saved return address to a later top stack slot and returns with `tpop {pc}`
+- any split return through a scratch register that clobbers a live result or does not come directly from the saved `lr` stack slot
 
 ## Return-Value Preservation
 

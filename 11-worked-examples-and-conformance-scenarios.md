@@ -147,16 +147,19 @@ Properties:
 - stores code pointers with bit 0 set
 - includes the required two `nop` after the table load
 
-## Example 8: Safe Saved-Return-Slot Epilogue
+## Example 8: Safe Saved-Argument-Area Epilogue
 
 ```asm
-tloadr  r0, [sp, #saved_ra]
-tstorer r0, [sp, #0]
-tadd    sp, #frame_size
-tpop    {pc}
+tpop    {r2}
+nop
+nop
+tadd    sp, #saved_argument_area_size
+tjex    r2
 ```
 
-This is the canonical shape when the return address must be moved back to the top stack slot before returning.
+This is the canonical shape when a variadic or saved-argument epilogue must skip
+an argument-register save area above the saved `lr` slot. Do not copy the saved
+return address to a later top stack slot and then return with `tpop {pc}`.
 
 ## Example 9: Canonical Long-Call Thunk
 

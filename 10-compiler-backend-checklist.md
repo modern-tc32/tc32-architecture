@@ -161,7 +161,8 @@ A production-grade TC32 toolchain should also implement:
 - direct long conditional branches
 - default far direct `tj`
 - `tpop {r3, ..., pc}`
-- split scratch-register returns after additional stack movement
+- saved-argument epilogues that copy the saved return address within the stack and return with `tpop {pc}`
+- split scratch-register returns that clobber a live result register or do not restore from the saved `lr` slot
 - byte or halfword compressed jump tables
 - unaligned halfword or word accesses without expansion
 - general atomic operations

@@ -171,20 +171,26 @@ Safe return forms:
 - `tpop {r4, r5, r6, r7, pc}`
 - `tpop {pc}`
 - `tjex lr` when no stack-restoring return is required
+- `tpop {tmp}` followed by saved-argument-area stack adjustment and `tjex tmp` for variadic epilogues, provided `tmp` is not a live result register
 
 Unsafe return forms:
 
 - `tpop {r3, r4, r5, r6, r7, pc}`
-- split returns that restore a saved return address into a scratch register and then jump through that scratch register after additional stack adjustment
+- stack-copy returns that move a saved return address to a later top stack slot and then use `tpop {pc}` in a variadic saved-argument epilogue
+- split scratch-register returns that clobber a live result register or derive the return address from anything other than the saved `lr` stack slot
 
-Example of a shape that `must not generate`:
+Example of a variadic saved-argument return shape that is safe to generate:
 
 ```asm
 tpop {r4, r5, r6, r7}
 tpop {r1}
+nop
+nop
 tadd sp, #16
 tjex r1
 ```
+
+For a 64-bit result in `r0:r1`, the temporary must be another low register, for example `r2` through `r7`.
 
 ## Special Instructions
 
