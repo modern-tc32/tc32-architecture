@@ -71,7 +71,7 @@ The table below is normative for compiler, assembler, disassembler, simulator, a
 | high-register `tmov rd, rs` | flags unchanged | does not create a new branch condition |
 | `tcmp a, b` and `tcmp a, #imm` | computes `a - b`; writes `N`, `Z`, `C`, `V`; writes no general register | primary safe source for signed and unsigned comparisons |
 | `tcmpn a, b` | computes `a + b`; writes `N`, `Z`, `C`, `V`; writes no general register | use only when addition-based flag semantics are intentional |
-| low-register `tadd` and `tsub` | write `N`, `Z`, `C`, `V` from the arithmetic result | safe source for range checks when the result-producing arithmetic is the intended compare |
+| low-register `tadd` and `tsub` | write `N`, `Z`, `C`, `V` from the arithmetic result | safe source for range checks when the result-producing arithmetic is the intended compare; `safe to generate`: for full-width integer or pointer arithmetic, keep the destination tied to the first source register; if another architectural destination is needed, copy the first source first and then issue the add/sub |
 | high-register `tadd` | flags unchanged | must not be used as an implicit compare |
 | `taddc` | consumes old `C`; writes `N`, `Z`, `C`, `V` from `a + b + carry_in` | only generate when multiword arithmetic is intentional |
 | `tsubc` | consumes old `C`; writes `N`, `Z`, `C`, `V` from `a - b - (1 - carry_in)` | only generate when multiword arithmetic is intentional |
