@@ -80,9 +80,9 @@ Do not generate:
 Mandatory repair:
 
 - detect the resolved short-conditional case whose target is exactly `P + 4`
-- do not emit the 16-bit zero-displacement encoding for that case
-- rewrite the local layout or CFG during final layout
-- acceptable repair: insert one 16-bit `nop` in the skipped fallthrough block so the short conditional branch no longer has zero displacement
+- emit the legal 16-bit zero-displacement encoding for that case when the short conditional edge is otherwise correct
+- do not reject that case in the assembler, MC relaxer, or late fixup code
+- optional canonicalization: rewrite local layout or CFG if the compiler has an independent reason to do so
 - forbidden repair: synthesize a direct long conditional branch for that edge
 
 ## Stage 6: Hazard Repair
@@ -105,7 +105,7 @@ Implement emission for:
 - mapping symbols
 
 The assembler must reject out-of-range direct spellings instead of silently rewriting them.
-The one required exception is the resolved short-conditional `P + 4` case, which must be widened or rewritten instead of emitted in 16-bit form.
+The resolved short-conditional `P + 4` case is not an exception to validity: it is a legal short-branch encoding with displacement zero and shall be accepted as such.
 
 ## Stage 8: Object Writer
 

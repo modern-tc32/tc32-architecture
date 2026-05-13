@@ -172,7 +172,7 @@ Must preserve:
 Perform:
 
 - short-branch range checking
-- exact-`P + 4` short-conditional repair
+- exact-`P + 4` short-conditional handling
 - conditional-branch rewriting
 - far-edge veneer insertion
 - jump-table finalization
@@ -319,8 +319,9 @@ Acceptance conditions:
 
 - all safe branch patterns are generated
 - no forbidden direct long conditional branches appear
-- any pass that repairs the resolved short-conditional `P + 4` case preserves the original condition code exactly; in particular, if fixup machinery operates on a pointer already positioned at the branch instruction, it shall recover the condition from the first halfword at that pointer and shall not re-apply the fragment-local offset
-- the repair for that `P + 4` case shall rewrite local layout or CFG structure and shall not synthesize a direct long conditional branch
+- the resolved 16-bit short conditional `P + 4` case is accepted as valid generated code
+- if any pass still rewrites that case, it preserves the original condition code exactly; in particular, if fixup machinery operates on a pointer already positioned at the branch instruction, it shall recover the condition from the first halfword at that pointer and shall not re-apply the fragment-local offset
+- no pass shall synthesize a direct long conditional branch merely because a short conditional edge resolved to `P + 4`
 
 ### Milestone 5: Production Safety
 

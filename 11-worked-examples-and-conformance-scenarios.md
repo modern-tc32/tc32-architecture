@@ -114,12 +114,12 @@ Interpretation:
 
 - the resolved target is exactly `P + 4`
 - a literal 16-bit `tjne` encoding would therefore use displacement `0`
-- that resolved short form is not safe as generated output on TLSR8258-class hardware
+- that resolved short form is architecturally valid and is accepted by vendor assemblers
 
 Required result:
 
-- the backend shall rewrite the edge before final assembly
-- acceptable repairs include local CFG reshaping or adding one 16-bit filler instruction so the target is no longer exactly `P + 4`
+- the assembler or MC layer shall encode the edge as the ordinary 16-bit short branch with displacement `0`
+- a compiler may still choose local CFG reshaping or padding, but that is optional
 - the assembler or MC relaxer shall not silently turn this case into a direct long conditional branch
 
 ## Example 7: Safe Jump Table

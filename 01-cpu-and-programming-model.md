@@ -121,10 +121,10 @@ The following condition codes are `architecturally defined` but require conserva
 
 Rules:
 
-- `safe to generate`: short conditional branches using ordinary conditions such as `EQ`, `NE`, `HS`, `LO`, `MI`, `HI`, `LT`, `GT`, and `LE`, provided the branch is in range and the resolved target is not exactly `P + 4`.
-- `must not generate`: the resolved 16-bit `tj<cc>` encoding whose target is exactly `P + 4`, because that encoding corresponds to `Enc = 0` and misexecutes on TLSR8258-class hardware.
+- `safe to generate`: short conditional branches using ordinary conditions such as `EQ`, `NE`, `HS`, `LO`, `MI`, `HI`, `LT`, `GT`, and `LE`, provided the branch is in range. This includes the resolved `Enc = 0` case whose target is exactly `P + 4`.
 - `must not generate`: direct long conditional branches as the general far-edge lowering strategy.
-- `toolchain obligation`: when a resolved short conditional edge targets exactly `P + 4`, rewrite the local layout or CFG during final layout instead of emitting the 16-bit `Enc = 0` form. Inserting one extra 16-bit filler instruction in the skipped fallthrough path is an acceptable repair.
+- `toolchain obligation`: a resolved short conditional edge whose target is exactly `P + 4` shall remain a legal 16-bit short branch case. The assembler, MC layer, and late fixup machinery shall encode and accept `Enc = 0` instead of rejecting it or silently rewriting it into a direct long conditional branch.
+- `toolchain allowance`: a compiler may still rewrite local layout or CFG for other reasons, but that is optional and shall preserve the original branch condition exactly.
 - `must not generate`: `tjpl` as the primary lowering of signed `>= 0` after an arbitrary callback or helper return.
 - `must not generate`: `tjls` as the primary range-check branch for jump-table dispatch.
 

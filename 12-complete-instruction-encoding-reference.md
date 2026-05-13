@@ -534,8 +534,8 @@ Special resolved-layout rule:
 - `Enc = 0` means `target = P + 4`
 - this is the case where the branch skips exactly one 16-bit instruction
 - the 16-bit encoding is architecturally valid and decodable
-- `must not generate`: the resolved 16-bit `Enc = 0` form on TLSR8258-class hardware
-- `toolchain obligation`: rewrite that edge during final layout; if a compiler chooses local padding as the repair, one extra 16-bit filler instruction is sufficient
+- vendor assemblers encode and accept this resolved 16-bit `Enc = 0` form
+- `toolchain obligation`: assemblers, relaxers, and fixup code shall encode and accept this form as a normal short conditional branch and shall not silently replace it with a direct long conditional branch
 
 ## Short Unconditional Branch
 
@@ -634,3 +634,4 @@ The following encodings are valid machine code but are not safe as the default o
 - short-immediate pointer arithmetic using `tadd #imm` or `tsub #imm`
 
 These forms may still appear in hand-written assembly, diagnostic tools, or controlled experiments. The one exception for automatic code generation is the mandatory widening of a resolved short conditional edge whose target is exactly `P + 4`.
+These forms may still appear in hand-written assembly, diagnostic tools, or controlled experiments. Automatic code generation shall continue to avoid direct long conditional branches as the generic far-edge strategy, but the resolved 16-bit short conditional `Enc = 0` form remains valid and shall not be widened merely because its target is exactly `P + 4`.

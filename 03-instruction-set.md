@@ -166,8 +166,9 @@ Special safety rule:
 
 - if the resolved target is exactly `branch_address + 4`, then `imm8 = 0`
 - that 16-bit encoding is `architecturally defined` and decodable
-- `must not generate`: the resolved short conditional `imm8 = 0` form on TLSR8258-class hardware
-- `toolchain obligation`: rewrite that edge during final layout; the repair may change local padding or CFG structure, but shall not substitute a direct long conditional branch
+- vendor toolchains encode and accept this exact `imm8 = 0` form
+- `toolchain obligation`: LLVM, GCC, assemblers, relaxers, and link-adjacent fixup code shall treat the resolved short conditional `imm8 = 0` form as valid and shall not silently substitute a direct long conditional branch for it
+- `toolchain allowance`: a compiler may still choose a different CFG or padding shape, but such rewriting is optional rather than mandatory
 
 ## Long Call Branch
 

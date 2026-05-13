@@ -31,10 +31,10 @@ The control-flow instruction surface used for code generation is:
 Rules:
 
 - `safe to generate`: keep conditional control transfers in short form whenever possible
-- `must not generate`: the resolved 16-bit `tj<cc>` encoding whose target is exactly `P + 4`
 - `must not generate`: direct long conditional branches as the general far-edge strategy
 - `toolchain obligation`: if a conditional target is out of range, rewrite the control flow so that the conditional edge remains short and the far transfer is moved onto an unconditional path
-- `toolchain obligation`: if a resolved short conditional edge targets exactly `P + 4`, rewrite the local layout or CFG during final layout instead of emitting the 16-bit zero-displacement form
+- `toolchain obligation`: if a resolved short conditional edge targets exactly `P + 4`, treat that as the legal `Enc = 0` short-branch case; do not reject it and do not silently turn it into a direct long conditional branch
+- `toolchain allowance`: compilers may still reshape CFG or padding around such an edge for unrelated canonicalization reasons
 
 ### Exact `pc + 4` Conditional Edge
 
@@ -44,9 +44,9 @@ For a short conditional branch, target `= pc + 4` means:
 - the encoded signed displacement is zero
 - the resulting 16-bit `tj<cc>` bit pattern is architecturally valid and decodable
 
-However, on TLSR8258-class hardware this resolved 16-bit form is not safe as generated output.
+Vendor assemblers accept and encode this resolved 16-bit form directly. LLVM and GCC support shall do the same.
 
-Allowed repair strategies:
+Optional compiler-side rewrites:
 
 - rewrite the CFG so the conditional edge no longer uses the short zero-displacement form
 - insert one additional 16-bit filler instruction in the skipped fallthrough path so the conditional target is no longer exactly `P + 4`
